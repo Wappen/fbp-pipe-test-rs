@@ -23,16 +23,12 @@ fn main() {
     let calculator = Calculator {};
     let printer = Printer {};
 
-    let printer_in = SendPipeImpl {
-        on_send: Box::new(move |val| {
-            printer.print(val);
-        }),
-    };
+    let printer_in = SendPipeImpl::new(move |val| {
+        printer.print(val);
+    });
 
-    let mut calculator_transformer = SyncTransformer::new(
-        Box::new(move |(a, b)| calculator.calc(a, b)),
-        Box::new(printer_in),
-    );
+    let mut calculator_transformer =
+        SyncTransformer::new(move |(a, b)| calculator.calc(a, b), printer_in);
 
     let start_time = Instant::now();
     loop {

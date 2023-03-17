@@ -1,13 +1,19 @@
 use crate::pipe::{RecvPipe, SendPipe};
 use crate::transformer::Transformer;
 
-pub struct BufferedTransformer<I, O> {
-    buffer: Option<Box<I>>,
-    transform: Box<dyn Fn(I) -> O>,
+pub struct BufferedTransformer<F, I, O>
+where
+    F: Fn(I) -> O,
+{
+    buffer: Option<I>,
+    transform: F,
 }
 
-impl<I, O> BufferedTransformer<I, O> {
-    pub fn new(transform: Box<dyn Fn(I) -> O>) -> Self {
+impl<F, I, O> BufferedTransformer<F, I, O>
+where
+    F: Fn(I) -> O,
+{
+    pub fn new(transform: F) -> Self {
         Self {
             buffer: None,
             transform,
@@ -15,19 +21,28 @@ impl<I, O> BufferedTransformer<I, O> {
     }
 }
 
-impl<I, O> SendPipe<I> for BufferedTransformer<I, O> {
+impl<F, I, O> SendPipe<I> for BufferedTransformer<F, I, O>
+where
+    F: Fn(I) -> O,
+{
     fn send(&mut self, input: I) {
-        self.buffer = Some(Box::new(input));
+        self.buffer = Some(input);
     }
 }
 
-impl<I, O> RecvPipe<Option<O>> for BufferedTransformer<I, O> {
+impl<F, I, O> RecvPipe<Option<O>> for BufferedTransformer<F, I, O>
+where
+    F: Fn(I) -> O,
+{
     fn recv(&mut self) -> Option<O> {
-        self.buffer.take().map(|val| self.transform(*val))
+        self.buffer.take().map(|val| self.transform(val))
     }
 }
 
-impl<I, O> Transformer<I, O> for BufferedTransformer<I, O> {
+impl<F, I, O> Transformer<I, O> for BufferedTransformer<F, I, O>
+where
+    F: Fn(I) -> O,
+{
     fn transform(&mut self, input: I) -> O {
         (self.transform)(input)
     }

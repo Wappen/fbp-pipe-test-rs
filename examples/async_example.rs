@@ -54,15 +54,11 @@ fn main() {
     let logger_in = {
         let logger = logger.clone();
 
-        SendPipeImpl {
-            on_send: Box::new(move |str| logger.set_state(str)),
-        }
+        SendPipeImpl::new(move |str| logger.set_state(str))
     };
 
-    let mut time2str_transformer = SyncTransformer::new(
-        Box::new(|d: Duration| format!("{:.2}s", d.as_secs_f32())),
-        Box::new(logger_in),
-    );
+    let mut time2str_transformer =
+        SyncTransformer::new(|d: Duration| format!("{:.2}s", d.as_secs_f32()), logger_in);
 
     let mut clock = Clock {
         on_tick: Box::new(move |input| time2str_transformer.send(input)),
