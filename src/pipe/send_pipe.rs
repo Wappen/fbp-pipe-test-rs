@@ -1,7 +1,5 @@
-use crate::pipe::Pipe;
-
-pub trait SendPipe<T>: Pipe {
-    fn send(&mut self, arg: T);
+pub trait SendPipe<T> {
+    fn send(&mut self, input: T);
 }
 
 pub struct SendPipeImpl<T> {
@@ -9,9 +7,7 @@ pub struct SendPipeImpl<T> {
 }
 
 impl<T> SendPipe<T> for SendPipeImpl<T> {
-    fn send(&mut self, arg: T) {
-        (self.on_send)(arg)
+    fn send(&mut self, input: T) {
+        (self.on_send)(input)
     }
 }
-
-impl<T> Pipe for SendPipeImpl<T> {}

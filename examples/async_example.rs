@@ -1,9 +1,11 @@
 use fbp_pipe_test_rs::pipe::{SendPipe, SendPipeImpl};
+use fbp_pipe_test_rs::transformer::SyncTransformer;
 use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 use std::{mem, thread};
 
+/// Logs it's state every second
 struct Logger {
     state: Mutex<String>,
 }
@@ -19,7 +21,7 @@ impl Default for Logger {
 impl Logger {
     pub fn run(&self) {
         loop {
-            println!("State: {}", self.state.lock().expect("Lock state"));
+            println!("log: {}", self.state.lock().expect("Lock state"));
             sleep(Duration::from_secs(1))
         }
     }
@@ -30,8 +32,9 @@ impl Logger {
     }
 }
 
+/// Ticks every 300ms
 struct Clock {
-    on_tick: Box<dyn FnMut(String)>,
+    on_tick: Box<dyn FnMut(Duration)>,
 }
 
 impl Clock {
@@ -39,7 +42,7 @@ impl Clock {
         let start_time = Instant::now();
         loop {
             let elapsed = Instant::now() - start_time;
-            (self.on_tick)(format!("elapsed secs: {}", elapsed.as_secs_f32()));
+            (self.on_tick)(elapsed);
             sleep(Duration::from_millis(300))
         }
     }
@@ -48,7 +51,7 @@ impl Clock {
 fn main() {
     let logger = Arc::new(Logger::default());
 
-    let mut logger_in = {
+    let logger_in = {
         let logger = logger.clone();
 
         SendPipeImpl {
@@ -56,8 +59,13 @@ fn main() {
         }
     };
 
+    let mut time2str_transformer = SyncTransformer::new(
+        Box::new(|d: Duration| format!("{:.2}s", d.as_secs_f32())),
+        Box::new(logger_in),
+    );
+
     let mut clock = Clock {
-        on_tick: Box::new(move |input| logger_in.send(input)),
+        on_tick: Box::new(move |input| time2str_transformer.send(input)),
     };
 
     thread::spawn(move || logger.run());

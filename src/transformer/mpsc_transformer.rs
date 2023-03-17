@@ -1,4 +1,4 @@
-use crate::pipe::{Pipe, RecvPipe, SendPipe};
+use crate::pipe::{RecvPipe, SendPipe};
 use crate::transformer::Transformer;
 use std::sync::mpsc::{channel, Receiver, Sender};
 
@@ -18,8 +18,6 @@ impl<I, O> MpscTransformer<I, O> {
         }
     }
 }
-
-impl<I, O> Pipe for MpscTransformer<I, O> {}
 
 impl<I, O> SendPipe<I> for MpscTransformer<I, O> {
     fn send(&mut self, input: I) {

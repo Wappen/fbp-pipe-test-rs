@@ -3,5 +3,3 @@ pub use send_pipe::*;
 
 mod recv_pipe;
 mod send_pipe;
-
-pub trait Pipe {}

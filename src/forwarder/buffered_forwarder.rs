@@ -1,11 +1,9 @@
-use crate::pipe::{Pipe, RecvPipe, SendPipe};
+use crate::pipe::{RecvPipe, SendPipe};
 
 #[derive(Default)]
 pub struct BufferedForwarder<T> {
     buffer: Option<Box<T>>,
 }
-
-impl<T> Pipe for BufferedForwarder<T> {}
 
 impl<T> SendPipe<T> for BufferedForwarder<T> {
     fn send(&mut self, input: T) {

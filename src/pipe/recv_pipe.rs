@@ -1,6 +1,4 @@
-use crate::pipe::Pipe;
-
-pub trait RecvPipe<T>: Pipe {
+pub trait RecvPipe<T> {
     fn recv(&mut self) -> T;
 }
 
@@ -13,5 +11,3 @@ impl<T> RecvPipe<T> for RecvPipeImpl<T> {
         (self.on_recv)()
     }
 }
-
-impl<T> Pipe for RecvPipeImpl<T> {}

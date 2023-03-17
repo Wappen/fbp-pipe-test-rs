@@ -1,4 +1,4 @@
-use crate::pipe::{Pipe, RecvPipe, SendPipe};
+use crate::pipe::{RecvPipe, SendPipe};
 use crate::transformer::Transformer;
 
 pub struct BufferedTransformer<I, O> {
@@ -14,8 +14,6 @@ impl<I, O> BufferedTransformer<I, O> {
         }
     }
 }
-
-impl<I, O> Pipe for BufferedTransformer<I, O> {}
 
 impl<I, O> SendPipe<I> for BufferedTransformer<I, O> {
     fn send(&mut self, input: I) {

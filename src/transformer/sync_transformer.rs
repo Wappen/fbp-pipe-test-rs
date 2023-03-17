@@ -1,4 +1,4 @@
-use crate::pipe::{Pipe, SendPipe};
+use crate::pipe::SendPipe;
 use crate::transformer::Transformer;
 
 pub struct SyncTransformer<I, O> {
@@ -11,8 +11,6 @@ impl<I, O> SyncTransformer<I, O> {
         Self { transform, output }
     }
 }
-
-impl<I, O> Pipe for SyncTransformer<I, O> {}
 
 impl<I, O> SendPipe<I> for SyncTransformer<I, O> {
     fn send(&mut self, input: I) {

@@ -15,10 +15,11 @@ struct Component {
 impl Component {
     pub fn run(mut self) {
         loop {
-            println!("{}: {}", &self.name, &self.state);
-            (self.on_publish)(format!("{} -> {}", self.state, self.name));
+            println!("{}: Publish ({})", &self.name, &self.state);
+            (self.on_publish)(format!("{} -> {}", self.name, self.state));
             if let Some(new_state) = (self.on_consume)() {
                 self.state = new_state;
+                println!("{}: Received ({})", &self.name, &self.state);
             }
             sleep(self.duration);
         }

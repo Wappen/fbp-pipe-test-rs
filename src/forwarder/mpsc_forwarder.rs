@@ -1,4 +1,4 @@
-use crate::pipe::{Pipe, RecvPipe, SendPipe};
+use crate::pipe::{RecvPipe, SendPipe};
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 pub fn forwarder<T>() -> (MpscForwarderIn<T>, MpscForwarderOut<T>) {
@@ -9,10 +9,6 @@ pub fn forwarder<T>() -> (MpscForwarderIn<T>, MpscForwarderOut<T>) {
 pub struct MpscForwarderIn<T>(Sender<T>);
 
 pub struct MpscForwarderOut<T>(Receiver<T>);
-
-impl<T> Pipe for MpscForwarderIn<T> {}
-
-impl<T> Pipe for MpscForwarderOut<T> {}
 
 impl<T> SendPipe<T> for MpscForwarderIn<T> {
     fn send(&mut self, input: T) {

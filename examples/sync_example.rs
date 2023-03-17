@@ -36,8 +36,8 @@ fn main() {
 
     let start_time = Instant::now();
     loop {
-        let a = (Instant::now() - start_time).as_millis() as i32;
-        let b = (Instant::now() - start_time).as_secs() as i32;
+        let a = (Instant::now() - start_time).as_secs() as i32;
+        let b = a * 10;
         calculator_transformer.send((a, b));
         sleep(Duration::from_secs(1));
     }
