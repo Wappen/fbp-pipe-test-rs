@@ -1,5 +1,5 @@
-use fbp_pipe_test_rs::forwarder::BufferedAsyncForwarder;
-use fbp_pipe_test_rs::{RecvPipe, SendPipe};
+use fbp_pipe_test_rs::forwarder::BufferedForwarder;
+use fbp_pipe_test_rs::pipe::{RecvPipe, SendPipe};
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::thread::sleep;
@@ -28,8 +28,8 @@ impl Component {
 }
 
 fn main() {
-    let sub2obj_forward = Arc::new(Mutex::new(BufferedAsyncForwarder::default()));
-    let obj2sub_forward = Arc::new(Mutex::new(BufferedAsyncForwarder::default()));
+    let sub2obj_forward = Arc::new(Mutex::new(BufferedForwarder::default()));
+    let obj2sub_forward = Arc::new(Mutex::new(BufferedForwarder::default()));
 
     let t2 = {
         let sub2obj_forward = sub2obj_forward.clone();

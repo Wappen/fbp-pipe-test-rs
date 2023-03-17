@@ -1,5 +1,5 @@
 use fbp_pipe_test_rs::forwarder::MpscForwarder;
-use fbp_pipe_test_rs::{RecvPipe, SendPipe};
+use fbp_pipe_test_rs::pipe::{RecvPipe, SendPipe};
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::thread::sleep;

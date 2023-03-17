@@ -1,5 +1,5 @@
+use crate::pipe::{Pipe, SendPipe};
 use crate::transformer::Transformer;
-use crate::{Pipe, SendPipe};
 
 pub struct SyncTransformer<I, O> {
     transform: Box<dyn Fn(I) -> O>,

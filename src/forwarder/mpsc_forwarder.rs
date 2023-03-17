@@ -1,5 +1,5 @@
 use crate::forwarder::Forwarder;
-use crate::{Pipe, RecvPipe, SendPipe};
+use crate::pipe::{Pipe, RecvPipe, SendPipe};
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 pub struct MpscForwarder<T> {

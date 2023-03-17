@@ -1,4 +1,4 @@
-use fbp_pipe_test_rs::{SendPipe, SendPipeImpl};
+use fbp_pipe_test_rs::pipe::{SendPipe, SendPipeImpl};
 use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::{Duration, Instant};

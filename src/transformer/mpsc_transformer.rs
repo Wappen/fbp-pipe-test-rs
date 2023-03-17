@@ -1,5 +1,5 @@
+use crate::pipe::{Pipe, RecvPipe, SendPipe};
 use crate::transformer::Transformer;
-use crate::{Pipe, RecvPipe, SendPipe};
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 pub struct MpscTransformer<I, O> {

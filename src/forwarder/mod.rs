@@ -1,11 +1,10 @@
-pub use buffered_async_forwarder::*;
+use crate::pipe::{RecvPipe, SendPipe};
+pub use buffered_forwarder::*;
 pub use mpsc_forwarder::*;
-pub use sync_forwarder::*;
 
-mod buffered_async_forwarder;
+mod buffered_forwarder;
 mod mpsc_forwarder;
-mod sync_forwarder;
 
-pub trait Forwarder<T> {
+pub trait Forwarder<T>: SendPipe<T> + RecvPipe<T> {
     fn forward(&mut self, input: T);
 }
