@@ -1,41 +1,33 @@
-use crate::forwarder::Forwarder;
 use crate::pipe::{Pipe, RecvPipe, SendPipe};
 use std::sync::mpsc::{channel, Receiver, Sender};
 
-pub struct MpscForwarder<T> {
-    input: Sender<T>,
-    output: Receiver<T>,
+pub fn forwarder<T>() -> (MpscForwarderIn<T>, MpscForwarderOut<T>) {
+    let (input, output) = channel();
+    (MpscForwarderIn(input), MpscForwarderOut(output))
 }
 
-impl<T> Default for MpscForwarder<T> {
-    fn default() -> Self {
-        let (input, output) = channel();
-        Self { input, output }
-    }
-}
+pub struct MpscForwarderIn<T>(Sender<T>);
 
-impl<T> Pipe for MpscForwarder<T> {}
+pub struct MpscForwarderOut<T>(Receiver<T>);
 
-impl<T> SendPipe<T> for MpscForwarder<T> {
+impl<T> Pipe for MpscForwarderIn<T> {}
+
+impl<T> Pipe for MpscForwarderOut<T> {}
+
+impl<T> SendPipe<T> for MpscForwarderIn<T> {
     fn send(&mut self, input: T) {
-        self.forward(input);
+        self.0.send(input).expect("send input")
     }
 }
 
-impl<T> RecvPipe<T> for MpscForwarder<T> {
+impl<T> RecvPipe<T> for MpscForwarderOut<T> {
     fn recv(&mut self) -> T {
-        self.output.recv().expect("recv output")
+        self.0.recv().expect("recv output")
     }
 }
 
-impl<T> RecvPipe<Option<T>> for MpscForwarder<T> {
+impl<T> RecvPipe<Option<T>> for MpscForwarderOut<T> {
     fn recv(&mut self) -> Option<T> {
-        self.output.try_recv().ok()
-    }
-}
-
-impl<T> Forwarder<T> for MpscForwarder<T> {
-    fn forward(&mut self, input: T) {
-        self.input.send(input).expect("send input")
+        self.0.try_recv().ok()
     }
 }

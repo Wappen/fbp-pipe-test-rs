@@ -1,4 +1,3 @@
-use crate::forwarder::Forwarder;
 use crate::pipe::{Pipe, RecvPipe, SendPipe};
 
 #[derive(Default)]
@@ -10,7 +9,7 @@ impl<T> Pipe for BufferedForwarder<T> {}
 
 impl<T> SendPipe<T> for BufferedForwarder<T> {
     fn send(&mut self, input: T) {
-        self.forward(input)
+        self.buffer = Some(Box::new(input))
     }
 }
 
@@ -23,11 +22,5 @@ impl<T> RecvPipe<T> for BufferedForwarder<T> {
 impl<T> RecvPipe<Option<T>> for BufferedForwarder<T> {
     fn recv(&mut self) -> Option<T> {
         self.buffer.take().map(|v| *v)
-    }
-}
-
-impl<T> Forwarder<T> for BufferedForwarder<T> {
-    fn forward(&mut self, input: T) {
-        self.buffer = Some(Box::new(input));
     }
 }

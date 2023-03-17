@@ -1,6 +1,5 @@
-use fbp_pipe_test_rs::forwarder::MpscForwarder;
+use fbp_pipe_test_rs::forwarder::mpsc_forwarder;
 use fbp_pipe_test_rs::pipe::{RecvPipe, SendPipe};
-use std::sync::{Arc, Mutex};
 use std::thread;
 use std::thread::sleep;
 use std::time::Duration;
@@ -27,17 +26,14 @@ impl Component {
 }
 
 fn main() {
-    let sub2obj_forward = Arc::new(Mutex::new(MpscForwarder::default()));
-    let obj2sub_forward = Arc::new(Mutex::new(MpscForwarder::default()));
+    let (mut sub2obj_in, mut sub2obj_out) = mpsc_forwarder::forwarder();
+    let (mut obj2sub_in, mut obj2sub_out) = mpsc_forwarder::forwarder();
 
     let t2 = {
-        let sub2obj_forward = sub2obj_forward.clone();
-        let obj2sub_forward = obj2sub_forward.clone();
-
         thread::spawn(move || {
             let subject = Component {
-                on_publish: Box::new(move |arg| sub2obj_forward.lock().unwrap().send(arg)),
-                on_consume: Box::new(move || obj2sub_forward.lock().unwrap().recv()),
+                on_publish: Box::new(move |arg| sub2obj_in.send(arg)),
+                on_consume: Box::new(move || obj2sub_out.recv()),
                 name: "Subject".to_string(),
                 state: "s".to_string(),
                 duration: Duration::from_secs(1),
@@ -48,8 +44,8 @@ fn main() {
 
     let t1 = thread::spawn(move || {
         let object = Component {
-            on_publish: Box::new(move |arg| obj2sub_forward.lock().unwrap().send(arg)),
-            on_consume: Box::new(move || sub2obj_forward.lock().unwrap().recv()),
+            on_publish: Box::new(move |arg| obj2sub_in.send(arg)),
+            on_consume: Box::new(move || sub2obj_out.recv()),
             name: "Object".to_string(),
             state: "o".to_string(),
             duration: Duration::from_secs(3),
