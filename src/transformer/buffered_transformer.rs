@@ -1,5 +1,4 @@
 use crate::pipe::{RecvPipe, SendPipe};
-use crate::transformer::Transformer;
 
 pub struct BufferedTransformer<F, I, O>
 where
@@ -35,15 +34,6 @@ where
     F: Fn(I) -> O,
 {
     fn recv(&mut self) -> Option<O> {
-        self.buffer.take().map(|val| self.transform(val))
-    }
-}
-
-impl<F, I, O> Transformer<I, O> for BufferedTransformer<F, I, O>
-where
-    F: Fn(I) -> O,
-{
-    fn transform(&mut self, input: I) -> O {
-        (self.transform)(input)
+        self.buffer.take().map(|val| (self.transform)(val))
     }
 }

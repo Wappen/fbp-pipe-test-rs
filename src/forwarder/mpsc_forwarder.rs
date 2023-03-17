@@ -16,6 +16,12 @@ impl<T> SendPipe<T> for MpscForwarderIn<T> {
     }
 }
 
+impl<T> Clone for MpscForwarderIn<T> {
+    fn clone(&self) -> Self {
+        Self(self.0.clone())
+    }
+}
+
 impl<T> RecvPipe<T> for MpscForwarderOut<T> {
     fn recv(&mut self) -> T {
         self.0.recv().expect("recv output")
