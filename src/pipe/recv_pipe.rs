@@ -12,6 +12,18 @@ where
     phantom: PhantomData<T>,
 }
 
+impl<F, T> RecvPipeImpl<F, T>
+where
+    F: Fn() -> T,
+{
+    pub fn new(on_recv: F) -> Self {
+        Self {
+            on_recv,
+            phantom: Default::default(),
+        }
+    }
+}
+
 impl<F, T> RecvPipe<T> for RecvPipeImpl<F, T>
 where
     F: Fn() -> T,
